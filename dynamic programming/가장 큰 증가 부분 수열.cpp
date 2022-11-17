@@ -28,40 +28,25 @@ using namespace std;
 #define A_MAX 1'000
 
 /* O(N * A) */
-#if 0
-int main() {
-	int N, A[N_MAX], d[A_MAX + 1]{};
-
-	cin >> N;
-
-	for (int i = 0; i < N; i++) {
-		cin >> A[i];
-	}
+int solution1(int* A, int N) {
+	int d[A_MAX + 1]{};
 
 	for (int i = 0; i < N; i++) { // O(N)
 		d[A[i]] = *max_element(d, d + A[i]) + A[i]; // O(A[i])
 	}
 
-	cout << *max_element(d, end(d)); // O(A_MAX)
+	return *max_element(d, end(d)); // O(A_MAX)
 }
-#endif
 
 /* O(N^2) */
-#if 0
-int main() {
-	int N, A[N_MAX], d[N_MAX];
-
-	cin >> N;
-
-	for (int i = 0; i < N; i++) {
-		cin >> A[i];
-	}
+int solution2(int* A, int N) {
+	int d[N_MAX];
 
 	for (int i = 0; i < N; i++) { // O(N)
 		int tmp = 0;
 
-		for (int j = 0; j < i; j++) {
-			if (A[j] < A[i] && d[j] > tmp) { // O(i)
+		for (int j = 0; j < i; j++) { // O(i)
+			if (A[j] < A[i] && d[j] > tmp) { 
 				tmp = d[j];
 			}
 		}
@@ -69,6 +54,17 @@ int main() {
 		d[i] = tmp + A[i];
 	}
 
-	cout << *max_element(d, d + N); // O(N)
+	return *max_element(d, d + N); // O(N)
 }
-#endif
+
+int main() {
+	int N, A[A_MAX];
+
+	cin >> N;
+
+	for (int i = 0; i < N; i++) {
+		cin >> A[i];
+	}
+
+	cout << solution1(A, N);
+}
