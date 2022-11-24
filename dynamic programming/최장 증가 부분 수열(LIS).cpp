@@ -1,17 +1,21 @@
 /*
+# reference
+
+https://en.wikipedia.org/wiki/Longest_increasing_subsequence
+
 # BOJ
- 
-https://www.acmicpc.net/problem/11055
- 
+
+https://www.acmicpc.net/problem/11053
+
 # Input Example
- 
+
 ```in
-10
-1 100 2 50 60 3 5 6 7 8
+6
+10 20 10 30 20 50
 ```
- 
+
 ```out
-113
+4
 ```
 */
 
@@ -33,7 +37,7 @@ int solution1(int* A, int N) {
 	int d[A_MAX + 1]{};
 
 	for (int i = 0; i < N; i++) { // O(N)
-		d[A[i]] = *max_element(d, d + A[i]) + A[i]; // O(A[i])
+		d[A[i]] = *max_element(d, d + A[i]) + 1; // O(A[i])
 	}
 
 	return *max_element(d, end(d)); // O(A_MAX)
@@ -47,15 +51,32 @@ int solution2(int* A, int N) {
 		int tmp = 0;
 
 		for (int j = 0; j < i; j++) { // O(i)
-			if (A[j] < A[i] && d[j] > tmp) { 
+			if (A[j] < A[i] && d[j] > tmp) {
 				tmp = d[j];
 			}
 		}
 
-		d[i] = tmp + A[i];
+		d[i] = tmp + 1;
 	}
 
 	return *max_element(d, d + N); // O(N)
+}
+
+/* O(NlogN) */
+int solution3(int* A, int N) {
+	int d[N_MAX], L = 0;
+
+	for (int i = 0; i < N; i++) { // O(N)
+		int idx = lower_bound(d, d + L, A[i]) - d; // O(logN)
+
+		if (idx == L) {
+			d[L++] = A[i];
+		}
+
+		d[idx] = A[i];
+	}
+
+	return L;
 }
 
 int main() {
