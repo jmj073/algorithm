@@ -24,12 +24,12 @@ using namespace std;
 #define N_MIN 1
 #define N_MAX 1'000
 
-/* 입력 수열 A */
+/* 입력 수열 A의 항 */
 #define A_MIN 1
 #define A_MAX 1'000
 
 /* O(N * A) */
-int solution1(int* A, int N) {
+int solution1(const int* A, int N) {
 	int d[A_MAX + 1]{};
 
 	for (int i = 0; i < N; i++) { // O(N)
@@ -40,7 +40,7 @@ int solution1(int* A, int N) {
 }
 
 /* O(N^2) */
-int solution2(int* A, int N) {
+int solution2(const int* A, int N) {
 	int d[N_MAX];
 
 	for (int i = 0; i < N; i++) { // O(N)
@@ -59,7 +59,7 @@ int solution2(int* A, int N) {
 }
 
 int main() {
-	int N, A[A_MAX];
+	int N, A[N_MAX];
 
 	cin >> N;
 

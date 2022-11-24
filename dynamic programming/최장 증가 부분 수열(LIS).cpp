@@ -21,6 +21,7 @@ https://www.acmicpc.net/problem/11053
 
 #include <iostream>
 #include <algorithm>
+#include "util/util_print.h"
 
 using namespace std;
 
@@ -28,12 +29,12 @@ using namespace std;
 #define N_MIN 1
 #define N_MAX 1'000
 
-/* 입력 수열 A */
+/* 입력 수열 A의 항 */
 #define A_MIN 1
 #define A_MAX 1'000
 
 /* O(N * A) */
-int solution1(int* A, int N) {
+int solution1(const int* A, int N) {
 	int d[A_MAX + 1]{};
 
 	for (int i = 0; i < N; i++) { // O(N)
@@ -44,7 +45,7 @@ int solution1(int* A, int N) {
 }
 
 /* O(N^2) */
-int solution2(int* A, int N) {
+int solution2(const int* A, int N) {
 	int d[N_MAX];
 
 	for (int i = 0; i < N; i++) { // O(N)
@@ -63,7 +64,7 @@ int solution2(int* A, int N) {
 }
 
 /* O(NlogN) */
-int solution3(int* A, int N) {
+int solution3(const int* A, int N) {
 	int d[N_MAX], L = 0;
 
 	for (int i = 0; i < N; i++) { // O(N)
@@ -79,8 +80,33 @@ int solution3(int* A, int N) {
 	return L;
 }
 
+/* O(NlogN) */
+int solution4(const int* A, int N, int* LIS) {
+	int d[N_MAX], pos[N_MAX], L = 0;
+
+	for (int i = 0; i < N; i++) { // O(N)
+		int idx = lower_bound(d, d + L, A[i]) - d; // O(logN)
+
+		if (idx == L) {
+			d[L++] = A[i];
+		}
+
+		d[idx] = A[i];
+		pos[i] = idx;
+	}
+
+	int tmp = L - 1;
+	for (int i = N; i-- > 0;) { // O(N)
+		if (pos[i] == tmp) {
+			LIS[tmp--] = A[i];
+		}
+	}
+
+	return L;
+}
+
 int main() {
-	int N, A[A_MAX];
+	int N, A[N_MAX];
 
 	cin >> N;
 
@@ -88,5 +114,12 @@ int main() {
 		cin >> A[i];
 	}
 
-	cout << solution1(A, N);
+	cout << solution1(A, N) << '\n';
+
+
+	int LIS[N_MAX];
+	int L = solution4(A, N, LIS);
+
+	cout << L << '\n';
+	print_seq(LIS, LIS + L, ' ');
 }
