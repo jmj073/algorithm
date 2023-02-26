@@ -18,7 +18,7 @@ $(TARGET): $(SOURCE) | $(BUILD_DIR)
 	@$(CC) -o $@ $^
 
 clean: FORCE
-	rm $(BUILD_DIR)/*.out
+	rm -r $(BUILD_DIR)
 
 $(BUILD_DIR):
 	mkdir $@
