@@ -8,7 +8,7 @@ TARGET := $(BUILD_DIR)/$(TARGET:.cpp=.out)
 ifeq ($(suffix $(SOURCE)),.c)
 CC := gcc
 else
-CC := g++
+CC := g++# -std=c++20
 endif
 
 test: FORCE $(TARGET)

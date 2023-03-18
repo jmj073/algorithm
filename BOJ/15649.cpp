@@ -1,4 +1,4 @@
-// backtracking
+// backtracking: N과 M(1) nPm
 #include <iostream>
 
 using namespace std;
