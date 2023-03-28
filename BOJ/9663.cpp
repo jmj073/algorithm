@@ -34,15 +34,18 @@ using namespace std;
 
 int N, cnt;
 
-void queen(int n, int r, int l, int c) {
+inline void queen(int n, int r, int l, int c) {
     int use = r | l | c, a = 1;
+    if (n == 1) {
+        cnt += popcount(unsigned(~use));
+        return;
+    }
+
     while (~use) {
-        if (!(use & 1)) {
-            if (n != 1) queen(n - 1, (r | a) << 1, (l | a) >> 1, c | a);
-            else ++cnt;
-        }
-        auto d = countr_one(unsigned(use >>= 1));
-        a <<= d + 1, use >>= d;
+        auto d = countr_one(unsigned(use));
+        a <<= d, use >>= d;
+        queen(n - 1, (r | a) << 1, (l | a) >> 1, c | a);
+        use >>= 1, a <<= 1;
     }
 }
 
