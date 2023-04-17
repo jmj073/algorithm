@@ -1,6 +1,6 @@
 #include <iostream>
 
-#define loop(i, n) for (int i = 0, __n = (n); i < __n; ++i)
+#define loop(i, b, e) for (decltype(b) i = (b), __e = (e); i < __e; ++i)
 
 using namespace std;
 
