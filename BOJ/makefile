@@ -6,15 +6,16 @@ TARGET := $(SOURCE:.c=.out)
 TARGET := $(BUILD_DIR)/$(TARGET:.cpp=.out)
 
 ifeq ($(suffix $(SOURCE)),.c)
-CC := gcc
+CC := gcc -Wall
 else
-CC := g++ -std=c++20
+CC := g++ -std=c++20 -Wall
 endif
 
 test: FORCE $(TARGET)
 	@$(TARGET)
 
 $(TARGET): $(SOURCE) | $(BUILD_DIR)
+	@echo "WARN: Initialize variables!"
 	@$(CC) -o $@ $^
 
 clean: FORCE
