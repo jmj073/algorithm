@@ -1,0 +1,31 @@
+max level에 삽입 되었을때:
+	if 부모인 min level node에 위배:
+		-> 조부모(max) >= 부모(min) > 자신(max)
+		-> 현 갈래의 모든 상위 max level node에 위배되지 않음
+		-> min level 위배 문제만 해결하면 됨
+		min level node를 타고 올라간다
+		return
+	else:
+		-> 현 갈래의 모든 min level node <= 부모(min) <= 자신(max)
+		-> 현 갈래의 모든 상위 min level node에 위배되지 않음
+	
+	if 조부모인 max level node에 위배:
+		-> "현 갈래의 모든 상위 min level node에 위배되지 않음"은 위에서 충족됨
+		-> max level 위배 문제만 해결하면 됨
+		max level node를 타고 올라간다
+
+min level에 삽입되었을 때:
+	if 부모인 max level node에 위배:
+		-> 조부모(min) <= 부모(max) < 자신
+		-> 모든 상위 min level node에 위배되지 않음
+		-> max level 위배 문제만 해결하면 됨
+		max level node를 타고 올라간다
+		return
+	else:
+		-> 현 갈래의 모든 max level node >= 부모(max) >= 자신(min)
+		현 갈래의 모든 상위 max level node에 위배되지 않음
+		
+	if 조부모인 min level node에 위배:
+		-> "현 갈래의 모든 상위 max level node에 위배되지 않음"은 위에서 충족됨
+		-> min level 위배 문제만 해결하면 됨
+		min level node를 타고 올라간다

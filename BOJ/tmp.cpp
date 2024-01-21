@@ -1,53 +1,70 @@
 #include <cstdio>
-#include <bit>
+#include <vector>
+#include <functional>
 
-#define foreach_bit(i, set) \
-    for (ULL _ = (set), i{}; ({ auto d = std::countr_zero(_); i += d; _ >>= d; }); _ >>= 1, ++i)
+using namespace std;
 
-using ULL = unsigned long long;
+template <typename T, typename CMP=less<T>>
+class Heap{
+public:
+    Heap(): arr() { }
 
-ULL fill_bit() {
-    int n;
-    scanf("%d", &n);
-    ULL ret{};
-    for (int i = 0; i < n; ++i) {
-        int a;
-        scanf("%d", &a);
-        ret |= 1ULL << (a - 1);
+    void push(T&& v) {
+        arr.push_back(forward<T>(v));
+        size_t cur = arr.size() - 1;
+        
+        while (cur != 0) {
+            auto p = parent(cur);
+            if (!cmp(arr[cur], arr[p])) break;
+            swap(arr[cur], arr[p]);
+            cur = p;
+        }
     }
-    return ret;
-}
+
+    T pop() {
+        T ret = move(arr[0]);
+        arr[0] = move(arr[arr.size() - 1]);
+        arr.pop_back();
+
+        size_t cur = 0;
+        while (true) {
+            auto c = child(cur);
+            if (c >= arr.size()) break;
+            if (c + 1 < arr.size() &&
+                !cmp(arr[c], arr[c + 1])) ++c;
+            if (cmp(arr[cur], arr[c])) break;
+            swap(arr[cur], arr[c]);
+            cur = c;
+        }
+
+        return ret;
+    }
+
+private:
+    size_t parent(size_t child) {
+        return child / 2;
+    }
+    size_t child(size_t parent) {
+        return parent * 2 + 1;
+    }
+
+private:
+    vector<T> arr;
+    CMP cmp;
+};
 
 int main() {
-    int N, M;
-    scanf("%d%d", &N, &M);
+    Heap<int> h;
 
-    ULL A = fill_bit();
+    h.push(4);
+    h.push(5);
+    h.push(2);
+    h.push(1);
+    h.push(3);
 
-    ULL party[50]{}, per[50]{};
-
-    for (int i = 0; i < M; ++i) {
-        ULL tmp = party[i] = fill_bit();
-        foreach_bit(i, tmp) {
-            per[i] |= tmp;
-        }
-    }
-
-    ULL know{};
-
-    while (A) {
-        know |= A;
-        ULL B{};
-        foreach_bit(i, A) {
-            B |= per[i];
-        }
-        A = B & ~know;
-    }
-
-    int ans{};
-    for (int i = 0; i < M; ++i) {
-        ans += !(party[i] & know);
-    }
-
-    printf("%d", ans);
+    printf("%d\n", h.pop());
+    printf("%d\n", h.pop());
+    printf("%d\n", h.pop());
+    printf("%d\n", h.pop());
+    printf("%d\n", h.pop());
 }
