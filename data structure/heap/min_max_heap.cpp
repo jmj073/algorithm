@@ -6,76 +6,31 @@
 
 using namespace std;
 
-template <typename I>
-size_t min_elem_idx(I first, size_t sz) {
-    return min_element(first, first + sz) - first;
+template <typename I, typename CMP>
+size_t most_elem_idx(I first, size_t sz, CMP cmp) {
+    auto m = first;
+    for (auto i = next(first); sz-- > 1; ++i) {
+        if (cmp(*i, *m)) m = i;
+    }
+    return m - first;
 }
-
-template <typename I>
-size_t max_elem_idx(I first, size_t sz) {
-    return max_element(first, first + sz) - first;
-}
-
 
 template <typename T>
 class MinMaxHeap{
 public:
     MinMaxHeap(): arr() { }
 
-    T pop_max() { //TODO pop_min이랑 중복 없애기
-        assert(!empty());
-
+    T pop_max() {
         size_t cur =
             num_of_child(0)
-            ? max_child(0)
+            ? most_child(0, greater<>())
             : 0;
 
-        T ret = move(arr[cur]);
-        arr[cur] = move(arr.back());
-        arr.pop_back();
-
-        while (num_of_child(cur) > 0) {
-            if (cur != 0) {
-                auto p = parent(cur);
-                if (arr[cur] < arr[p])
-                    swap(arr[cur], arr[p]);
-            }
-            size_t mn =
-                num_of_grand_child(cur)
-                ? max_grand_child(cur)
-                : max_child(cur);
-            if (arr[cur] > arr[mn]) break;
-            swap(arr[cur], arr[mn]);
-            cur = mn;
-        }
-
-        return ret;
+        return pop(cur, greater<>());
     }
 
-    T pop_min() { //TODO pop_max랑 중복 없애기
-        assert(!empty());
-
-        size_t cur = 0;
-        T ret = move(arr[cur]);
-        arr[cur] = move(arr.back());
-        arr.pop_back();
-
-        while (num_of_child(cur) > 0) {
-            if (cur != 0) {
-                auto p = parent(cur);
-                if (arr[cur] > arr[p])
-                    swap(arr[cur], arr[p]);
-            }
-            size_t mn =
-                num_of_grand_child(cur)
-                ? min_grand_child(cur)
-                : min_child(cur);
-            if (arr[cur] < arr[mn]) break;
-            swap(arr[cur], arr[mn]);
-            cur = mn;
-        }
-
-        return ret;
+    T pop_min() {
+        return pop(0, less<>());
     }
 
     void push(T&& v) {
@@ -112,6 +67,32 @@ public:
     }
 
 private:
+
+    template <typename CMP>
+    T pop(size_t idx, CMP cmp) {
+        size_t cur = idx;
+        T ret = move(arr[cur]);
+        arr[cur] = move(arr.back());
+        arr.pop_back();
+
+        while (num_of_child(cur) > 0) {
+            if (cur != 0) {
+                auto p = parent(cur);
+                if (cmp(arr[p], arr[cur]))
+                    swap(arr[p], arr[cur]);
+            }
+            size_t mn =
+                num_of_grand_child(cur)
+                ? most_grand_child(cur, cmp)
+                : most_child(cur, cmp);
+            if (cmp(arr[cur], arr[mn])) break;
+            swap(arr[cur], arr[mn]);
+            cur = mn;
+        }
+
+        return ret;
+    }
+
     bool is_valid_parent(size_t child) const {
         return (arr[child] < arr[parent(child)]) ^ is_max_level(child);
     }
@@ -152,28 +133,18 @@ private:
         return min<size_t>(4, arr.size() - gch);
     }
 
-    size_t min_grand_child(size_t grand_parent) const {
+    template <typename CMP>
+    size_t most_grand_child(size_t grand_parent, CMP cmp) const {
         auto gch = grand_child(grand_parent);
-        return min_elem_idx(arr.begin() + gch,
-            num_of_grand_child(grand_parent)) + gch;
+        return most_elem_idx(arr.begin() + gch,
+            num_of_grand_child(grand_parent), cmp) + gch;
     }
 
-    size_t min_child(size_t parent) const {
+    template <typename CMP>
+    size_t most_child(size_t parent, CMP cmp) const {
         auto ch = child(parent);
-        return min_elem_idx(arr.begin() + ch,
-            num_of_child(parent)) + ch;
-    }
-
-    size_t max_grand_child(size_t grand_parent) const {
-        auto gch = grand_child(grand_parent);
-        return max_elem_idx(arr.begin() + gch,
-            num_of_grand_child(grand_parent)) + gch;
-    }
-
-    size_t max_child(size_t parent) const {
-        auto ch = child(parent);
-        return max_elem_idx(arr.begin() + ch,
-            num_of_child(parent)) + ch;
+        return most_elem_idx(arr.begin() + ch,
+            num_of_child(parent), cmp) + ch;
     }
 
 public:
