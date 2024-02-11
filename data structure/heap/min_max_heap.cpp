@@ -20,21 +20,38 @@ class MinMaxHeap{
 public:
     MinMaxHeap(): arr() { }
 
+    const T& max() const {
+        size_t i =
+            num_of_child(0)
+            ? most_child(0, greater<>())
+            : 0;
+
+        return arr[i];
+    }
+
     T pop_max() {
         size_t cur =
             num_of_child(0)
             ? most_child(0, greater<>())
             : 0;
 
-        return pop(cur, greater<>());
+        return pop(cur);
+    }
+
+    const T& min() const {
+        return arr[0];
     }
 
     T pop_min() {
-        return pop(0, less<>());
+        return pop(0);
+    }
+
+    void push(const T& v) {
+        return push(T(v));
     }
 
     void push(T&& v) {
-        arr.push_back(forward<T>(v));
+        arr.push_back(move(v));
         size_t cur = arr.size() - 1;
 
         if (cur == 0) return;
@@ -67,6 +84,13 @@ public:
     }
 
 private:
+
+    T pop (size_t idx) {
+        if (is_min_level(idx)) {
+            return pop(idx, less<>());
+        }
+        return pop(idx, greater<>());
+    }
 
     template <typename CMP>
     T pop(size_t idx, CMP cmp) {
@@ -102,7 +126,7 @@ private:
     }
 
     size_t parent(size_t child) const {
-        return (child - 1) / 2;
+        return child ? (child - 1) / 2 : 0;
     }
     size_t grand_parent(size_t grand_child) const {
         return parent(parent(grand_child));
@@ -124,13 +148,13 @@ private:
     size_t num_of_child(size_t parent) const {
         auto ch = child(parent);
         if (arr.size() <= ch) return 0;
-        return min<size_t>(2, arr.size() - ch);
+        return ::min<size_t>(2, arr.size() - ch);
     }
 
     size_t num_of_grand_child(size_t grand_parent) const {
         auto gch = grand_child(grand_parent);
         if (arr.size() <= gch) return 0;
-        return min<size_t>(4, arr.size() - gch);
+        return ::min<size_t>(4, arr.size() - gch);
     }
 
     template <typename CMP>
@@ -160,6 +184,46 @@ int main() {
 }
 #endif
 
+#if 0
+int main() {
+    MinMaxHeap<long> heap;
+
+    heap.push(1);
+    heap.print_elems();
+    cout << "====================\n";
+    heap.push(4);
+    heap.print_elems();
+    cout << "====================\n";
+    heap.push(2);
+    heap.print_elems();
+    cout << "====================\n";
+    heap.push(1);
+    heap.print_elems();
+    cout << "====================\n";
+    heap.push(3);
+    heap.print_elems();
+    cout << "====================\n";
+    heap.push(4);
+    heap.print_elems();
+    cout << "====================\n";
+    heap.push(5);
+    heap.print_elems();
+    cout << "====================\n";
+    heap.push(1);
+    heap.print_elems();
+    cout << "====================\n";
+
+    cout << heap.pop_max() << '\n';
+    cout << heap.pop_min() << '\n';
+    cout << heap.pop_max() << '\n';
+    cout << heap.pop_min() << '\n';
+    cout << heap.pop_max() << '\n';
+    cout << heap.pop_min() << '\n';
+    cout << heap.pop_max() << '\n';
+    cout << heap.pop_min() << '\n';
+}
+#endif
+
 #if 1
 int main() {
     MinMaxHeap<int> heap;
@@ -174,7 +238,7 @@ int main() {
 
     heap.print_elems();
 
-#if 1 // pop_max & pop_min
+#if 0 // pop_max & pop_min
     cout << heap.pop_max() << '\n';
     cout << heap.pop_min() << '\n';
     cout << heap.pop_max() << '\n';
@@ -184,7 +248,7 @@ int main() {
     cout << heap.pop_max() << '\n';
 #endif // pop_max & pop_min
 
-#if 0 // pop_max
+#if 1 // pop_max
     cout << heap.pop_max() << '\n';
     cout << heap.pop_max() << '\n';
     cout << heap.pop_max() << '\n';
